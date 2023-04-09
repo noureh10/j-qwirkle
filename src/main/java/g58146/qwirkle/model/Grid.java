@@ -31,14 +31,14 @@ public class Grid {
      * This method is used to add the first tiles in the center of the grid.
      * If there are more than one tiles, it adds them up on the desired direction.
      * @param d The direction
-     * @param lines tile varargs 
+     * @param lines tile varargs
      */
-    public void firstAdd(Direction d, Tile...lines) {
+    public void firstAdd(Direction d, Tile...lines){
         int x = 45, y = 45;
         checkException(true,x,y,lines);
         tiles[x][y] = lines[0];
         this.isEmpty = false;
-        for (int i = 1; i < lines.length; i++) {
+        for (int i = 1; i < lines.length; i++){
             x+=d.getDeltaRow();
             y+=d.getDeltaCol();
             if(checkMove(x,y,lines[i])){
@@ -58,7 +58,48 @@ public class Grid {
             tiles[row][col]=tile;
         }
     }
-    
+    /**
+     * This method is used to add a set of tile. Once in a set position, the other
+     * one will follow the given direction
+     * @param row The row position of the first tile in line
+     * @param col The column position of the first tile in line
+     * @param d The direction of the tiles
+     * @param lines tile varargs
+     */
+    public void add(int row,int col,Direction d, Tile...lines){
+        checkException(false,row,col,lines);
+        for (int i = 0; i < lines.length; i++){
+            row += d.getDeltaRow();
+            col += d.getDeltaCol();
+            if(checkMove(row,col,lines[i])){
+                tiles[row][col] = lines[i];
+            }
+        }
+    }
+    /**
+     * This method is used to add a set of tile on a specified position. Once
+     * in a set position, the other tile will follow the given coordinates.
+     * @param line The set of tile
+     */
+    public void add(TileAtPosition...line){
+        if(!checkPlayedDeck(line)){
+            throw new QwirkleException("The deck you played has two tile"
+                    + "with same color and shape attribute");
+        }
+        for (TileAtPosition t : line){
+            int row=t.row(),col=t.col();
+            if(tiles[row][col]!=null){
+                throw new QwirkleException("Piece already present"
+                        + "at that position");
+            }if(checkMove(row,col,t)){
+                tiles[row][col] = new Tile(t.tile().color(),t.tile().shape());
+            }
+        }
+    }
+    /**
+     * This method checks if the grid array is empty
+     * @return A boolean value
+     */
     public boolean isEmpty(){
         return this.isEmpty;
     }
