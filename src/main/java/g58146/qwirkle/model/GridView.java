@@ -7,10 +7,15 @@ public class GridView {
     private Grid grid;
     /**
      * Constructor of the grid view class
-     * @param grid 
      */
     public GridView(Grid grid){
         this.grid = grid;
+    }
+    /**
+     * Getter for the grid attribute;
+     */
+    public Grid getGrid() {
+        return grid;
     }
     /**
      * Returns a tile from a desired row and column
