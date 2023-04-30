@@ -35,7 +35,13 @@ public class Grid {
      */
     public void firstAdd(Direction d, Tile...lines){
         int x = 45, y = 45;
-        checkException(true,x,y,lines);
+        if(tiles[x][y]!=null){
+                throw new QwirkleException("First add method already used");
+        }
+        if(!checkPlayedDeck(lines)){
+            throw new QwirkleException("The deck you played has two tile"
+                    + "with same color and shape attribute");
+        }
         tiles[x][y] = lines[0];
         this.isEmpty = false;
         for (int i = 1; i < lines.length; i++){
@@ -43,6 +49,8 @@ public class Grid {
             y+=d.getDeltaCol();
             if(checkMove(x,y,lines[i])){
                 tiles[x][y] = lines[i];
+            }else{
+                throw new QwirkleException("Not a valid move");
             }
         }
     }
@@ -53,9 +61,17 @@ public class Grid {
      * @param tile The tile
      */
     public void add(int row,int col,Tile tile){
-        checkException(false,row,col,tile);
+        if(row==45&&col==45){
+            throw new QwirkleException("You must use the firstAdd method");
+        }
+        if(!checkPlayedDeck(tile)){
+            throw new QwirkleException("The deck you played has two tile"
+                    + "with same color and shape attribute");
+        }
         if(checkMove(row,col,tile)){
             tiles[row][col]=tile;
+        }else{
+            throw new QwirkleException("Not a valid move");
         }
     }
     /**
@@ -67,12 +83,20 @@ public class Grid {
      * @param lines tile varargs
      */
     public void add(int row,int col,Direction d, Tile...lines){
-        checkException(false,row,col,lines);
+        if(row==45&&col==45){
+                throw new QwirkleException("You must use the firstAdd method");
+        }
+        if(!checkPlayedDeck(lines)){
+            throw new QwirkleException("The deck you played has two tile"
+                    + "with same color and shape attribute");
+        }
         for (int i = 0; i < lines.length; i++){
             row += d.getDeltaRow();
             col += d.getDeltaCol();
             if(checkMove(row,col,lines[i])){
                 tiles[row][col] = lines[i];
+            }else{
+                throw new QwirkleException("Not a valid move");
             }
         }
     }
@@ -93,6 +117,8 @@ public class Grid {
                         + "at that position");
             }if(checkMove(row,col,t)){
                 tiles[row][col] = new Tile(t.tile().color(),t.tile().shape());
+            }else{
+                throw new QwirkleException("Not a valid move");
             }
         }
     }
@@ -102,33 +128,6 @@ public class Grid {
      */
     public boolean isEmpty(){
         return this.isEmpty;
-    }
-    /**
-     * Method checks all the case that could generate an exception.
-     * @param firstMove A boolean value to indicate if the tile that will be
-     * added is the first move
-     * @param row The row
-     * @param col The column
-     * @param t The deck of cards
-     */
-    private void checkException(boolean firstMove,int row,int col,Tile...t){
-        if(firstMove){
-            if(tiles[45][45]!=null){
-                throw new QwirkleException("First add method already used");
-            }
-        }else{
-            if(row==45&&col==45){
-                throw new QwirkleException("You must use the firstAdd method");
-            }
-        }
-        if(t.length>6){
-            throw new QwirkleException("The deck you want to play with is"
-                    + "bigger than 6");
-        }
-        if(!checkPlayedDeck(t)){
-            throw new QwirkleException("The deck you played has two tile"
-                    + "with same color and shape attribute");
-        }
     }
     /**
      * This method checks all the surroundings position of a tile with a loop.
@@ -141,27 +140,28 @@ public class Grid {
      * @param t The tile
      * @return A boolean value
      */
-    private boolean checkMove(int row, int col, Object t) {
-        if (tiles[row][col] != null){
+    private boolean checkMove(int row, int col, Object t){
+        if(tiles[row][col]!=null){
             return false;
         }
-        int cnt = 0;
-        for (Direction d : Direction.values()) {
-            int ncol = col + d.getDeltaCol();
-            int nrow = row + d.getDeltaRow();
-            if (ncol>=0&&ncol<this.SIZE&&nrow>=0&&nrow<this.SIZE){
-                Tile curr=(t instanceof Tile)?(Tile) t:
-                        new Tile(((TileAtPosition) t).tile().color(),
-                                ((TileAtPosition) t).tile().shape());
-                if(tiles[nrow][ncol]==null){
-                    cnt++;
-                }else if((tiles[nrow][ncol].color()==curr.color()
-                        ^(tiles[nrow][ncol].shape()==curr.shape()))){
-                    cnt++;
-                }
+        for(Direction d:Direction.values()){
+            int nCol=col+d.getDeltaCol();
+            int nRow=row+d.getDeltaRow();
+            Tile curr=(t instanceof Tile)?(Tile) t:
+                    new Tile(((TileAtPosition)t).tile().color(),
+                           ((TileAtPosition) t).tile().shape());
+            while((nCol>=0&&nCol<SIZE&&nRow>=0&&nCol<SIZE)
+                &&(tiles[nRow][nCol]!=null)){
+                    if(tiles[nRow][nCol].shape()== curr.shape()
+                        ^tiles[nRow][nCol].color()== curr.color()){
+                            nCol+=d.getDeltaCol();
+                            nRow+=d.getDeltaRow();
+                    }else{
+                        return false;
+                    }
             }
         }
-        return cnt==4;
+        return true;
     }
      /**
      * This method check if the played deck contains tiles with 2 same attribute.
@@ -170,6 +170,10 @@ public class Grid {
      * @return A boolean value
      */
     private boolean checkPlayedDeck(Object...lines){
+        if(lines.length>6){
+            throw new QwirkleException("The deck you want to play with is"
+                    + "bigger than 6");
+        }
         for(int i=0;i<lines.length;i++){
             // Ternary operation to either cast the object as line or create
             // a new Tile object with the object attribute
