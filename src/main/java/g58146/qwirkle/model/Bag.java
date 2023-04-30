@@ -43,16 +43,16 @@ public class Bag {
      * @param n Number of tiles wanted
      * @return an array of randomly picked tiles
      */
-    public Tile[] getRandomTiles(int n){
+    public List<Tile> getRandomTiles(int n){
         if(n>tiles.size()){
             return null;
         }
         Random ran = new Random();
-        Tile[] ranTilesArray = new Tile[n];
+        List<Tile> ranTilesArray = new ArrayList<>(n);
         for (int i = 0; i < n; i++){
             // Generates a random index that doesn't exceed the tiles list
             int randomInt = ran.nextInt(tiles.size());
-            ranTilesArray[i] = tiles.get(randomInt);
+            ranTilesArray.add(tiles.get(randomInt));
             tiles.remove(randomInt);  
         }
         return ranTilesArray;
