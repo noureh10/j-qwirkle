@@ -121,5 +121,4 @@ public class Game {
         currentPlayer+=1;
         currentPlayer%= players.length;
     }
-    
 }

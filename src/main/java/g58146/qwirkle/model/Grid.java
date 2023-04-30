@@ -5,14 +5,12 @@ package g58146.qwirkle.model;
  */
 public class Grid {
     private Tile[][] tiles;
-    private boolean isEmpty;
     private final int SIZE=91;    
     /*
     * Constructor of the grid class
     */
     public Grid(){
         this.tiles = new Tile[SIZE][SIZE];
-        this.isEmpty = true;
     }
     /**
      * This method returns the tiles at the current position, returns null
@@ -21,8 +19,8 @@ public class Grid {
      * @param col The column
      * @return returns the tile if there's one, null if there's none
      */
-    public Tile get(int row,int col){
-        if(row<0||col<0){
+    public Tile get(int row, int col) {
+        if (this.tiles==null||row< 0||col<0||row >=this.SIZE||col>=SIZE){
             return null;
         }
         return tiles[row][col];
@@ -43,7 +41,6 @@ public class Grid {
                     + "with same color and shape attribute");
         }
         tiles[x][y] = lines[0];
-        this.isEmpty = false;
         for (int i = 1; i < lines.length; i++){
             x+=d.getDeltaRow();
             y+=d.getDeltaCol();
@@ -127,7 +124,7 @@ public class Grid {
      * @return A boolean value
      */
     public boolean isEmpty(){
-        return this.isEmpty;
+        return this.tiles==null;
     }
     /**
      * This method checks all the surroundings position of a tile with a loop.
@@ -180,7 +177,7 @@ public class Grid {
             Tile curr=(lines[i] instanceof Tile)?(Tile) lines[i]:
                     new Tile(((TileAtPosition)lines[i]).tile().color(),
                            ((TileAtPosition) lines[i]).tile().shape());
-             for(int j=0;j<i;j++){
+            for(int j=0;j<i;j++){
                 Tile prev=(lines[j] instanceof Tile)?(Tile) lines[j]:
                     new Tile(((TileAtPosition)lines[j]).tile().color(),
                            ((TileAtPosition) lines[j]).tile().shape());
