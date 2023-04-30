@@ -1,6 +1,7 @@
 package g58146.qwirkle.model;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 /**
  *
@@ -12,7 +13,7 @@ public class Player {
     /**
      * Constructor of the player class.
      */
-    public Player(String name, List<Tile> tiles) {
+    public Player(String name) {
         this.name = name;
         this.tiles = new ArrayList<Tile>();
     }
@@ -40,8 +41,6 @@ public class Player {
      * This method removes tiles from the player hands
      */
     public void remove(Tile...ts){
-        for (Tile t : ts){
-            tiles.remove(t);
-        }
+        tiles.removeAll(Arrays.asList(ts));
     } 
 }
