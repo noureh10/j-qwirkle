@@ -11,15 +11,16 @@ public class Game {
     private int currentPlayer;
     /**
      * Constructor of the Game class
-     * @param playersNames 
+     * @param playersNames
      */
     public Game(String[] playersNames){
         this.players = new Player[playersNames.length];
         for (int i=0;i<playersNames.length;i++){
             this.players[i] = new Player(playersNames[i]);
+            this.players[i].refill();
         }
         this.grid = new Grid();
-        this.currentPlayer=0;  
+        this.currentPlayer=0;
     }
      /**
      * This method allow the player to make the first move. It selects the cards
@@ -27,13 +28,13 @@ public class Game {
      * @param d The direction applied to those tiles
      * @param is The specific order
      */
-    public void first(Direction d, int... is) {
+    public void first(Direction d, int...is){
         Tile[] tilesToAdd = new Tile[is.length];
-        for (int i : is){
-            tilesToAdd[i] = getCurrentPlayerHand().get(i);
+        for(int i=0;i<is.length;i++){
+            tilesToAdd[i] = getCurrentPlayerHand().get(is[i]);
         }
-        grid.firstAdd(d, tilesToAdd);
-        getCurrentPlayerHand().removeAll(Arrays.asList(tilesToAdd));
+        grid.firstAdd(d,tilesToAdd);
+        players[currentPlayer].remove(tilesToAdd);
         currentPlayerRefill();
         pass();
     }
@@ -47,7 +48,7 @@ public class Game {
     public void play(int row,int col,int index){
         Tile tileToAdd = getCurrentPlayerHand().get(index);
         grid.add(row, col, tileToAdd);
-        getCurrentPlayerHand().remove(index);
+        players[currentPlayer].remove(tileToAdd);
         currentPlayerRefill();
         pass();
     }
@@ -62,11 +63,11 @@ public class Game {
      */
     public void play(int row,int col,Direction d,int...is){
         Tile[] tilesToAdd = new Tile[is.length];
-        for (int i : is){
-            tilesToAdd[i] = getCurrentPlayerHand().get(i);
+        for(int i=0;i<is.length;i++){
+            tilesToAdd[i] = getCurrentPlayerHand().get(is[i]);
         }
         grid.add(row, col, d, tilesToAdd);
-        getCurrentPlayerHand().removeAll(Arrays.asList(tilesToAdd));
+        players[currentPlayer].remove(tilesToAdd);
         currentPlayerRefill();
         pass();
     }
@@ -81,20 +82,19 @@ public class Game {
             throw new QwirkleException("The 'is' parameter should always have a "
                     + "length that is a multiple of 3.");
         }
-        TileAtPosition[] tilesToAdd=new TileAtPosition[is.length];
+        TileAtPosition[] tilesToAdd=new TileAtPosition[is.length/3];
         Tile[] tilesToRemove = new Tile[is.length/3];
-        int tilesCounter=0;
-        for (int i=0;i<is.length;i+=3){
+        for (int i=0,j=0;i<is.length;i+=3,j++){
             int row=is[i];
             int col=is[i+1];
-            Tile index=getCurrentPlayerHand().get(i+2);
-            tilesToAdd[tilesCounter]=new TileAtPosition(row,col,index);
-            tilesToRemove[i] = index;
+            Tile index=getCurrentPlayerHand().get(is[i+2]);
+            tilesToAdd[j]=new TileAtPosition(row,col,index);
+            tilesToRemove[j] = index;
         }
         grid.add(tilesToAdd);
-        getCurrentPlayerHand().removeAll(Arrays.asList(tilesToRemove));
+        players[currentPlayer].remove(tilesToRemove);
         currentPlayerRefill();
-        pass(); 
+        pass();
     }
     /**
      * This method is used to get the current player name.
@@ -102,23 +102,35 @@ public class Game {
     public String getCurrentPlayerName(){
         return this.players[this.currentPlayer].getName();
     }
-        /**
+    /**
      * This method is used to get the current hand.
      */
     public List<Tile> getCurrentPlayerHand(){
         return this.players[this.currentPlayer].getHand();
     }
     /**
-     * This method is used to refill the hand of the current player
+     * This method is used to get the current player.
+     */
+    public Player getCurrentPlayer(){
+        return this.players[this.currentPlayer];
+    }   
+    /**
+     * This method is used to refill the hand of the current player.
      */
     private void currentPlayerRefill(){
         this.players[this.currentPlayer].refill();
     }
     /**
+     * This method is used to get the current state of the grid.
+     */
+    public Grid getGrid() {
+        return this.grid;
+    }
+    /**
      * This method pass the turn to the next player
      */
     public void pass(){
-        currentPlayer+=1;
-        currentPlayer%= players.length;
+        this.currentPlayer+=1;
+        this.currentPlayer%= this.players.length;
     }
 }
