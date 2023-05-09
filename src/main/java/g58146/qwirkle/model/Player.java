@@ -15,7 +15,7 @@ public class Player {
      */
     public Player(String name) {
         this.name = name;
-        this.tiles = new ArrayList<Tile>();
+        this.tiles = new ArrayList<>();
     }
     /**
      * Getter for the name attribute

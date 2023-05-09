@@ -1,6 +1,6 @@
 package g58146.qwirkle.model;
 /**
- *
+ * The GridView class represents a view of a Qwirkle game grid.
  * @author Nour
  */
 public class GridView {
