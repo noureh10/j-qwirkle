@@ -5,12 +5,14 @@ package g58146.qwirkle.model;
  */
 public class Grid {
     private Tile[][] tiles;
-    private final int SIZE=91;    
+    private final int SIZE=91;
+    private boolean firstMove;
     /*
     * Constructor of the grid class
     */
     public Grid(){
         this.tiles = new Tile[SIZE][SIZE];
+        this.firstMove = false;
     }
     /**
      * This method returns the tiles at the current position, returns null
@@ -33,7 +35,7 @@ public class Grid {
      */
     public void firstAdd(Direction d, Tile...lines){
         int x = 45, y = 45;
-        if(tiles[x][y]!=null){
+        if(firstMove){
                 throw new QwirkleException("First add method already used");
         }
         if(!checkPlayedDeck(lines)){
@@ -46,7 +48,15 @@ public class Grid {
             y+=d.getDeltaCol();
             if(checkMove(x,y,lines[i])){
                 tiles[x][y] = lines[i];
+                firstMove=true;
             }else{
+                // remove all previously added tiles if a new tile doesn't match
+                for (int j = i - 1; j >= 0; j--) {
+                    x -= d.getDeltaRow();
+                    y -= d.getDeltaCol();
+                    tiles[x][y] = null;
+                }
+                firstMove=false;
                 throw new QwirkleException("Not a valid move");
             }
         }
@@ -58,7 +68,7 @@ public class Grid {
      * @param tile The tile
      */
     public void add(int row,int col,Tile tile){
-        if(row==45&&col==45){
+        if(!firstMove){
             throw new QwirkleException("You must use the firstAdd method");
         }
         if(!checkPlayedDeck(tile)){
@@ -68,6 +78,7 @@ public class Grid {
         if(checkMove(row,col,tile)){
             tiles[row][col]=tile;
         }else{
+            tiles[row][col]=null;
             throw new QwirkleException("Not a valid move");
         }
     }
@@ -80,7 +91,7 @@ public class Grid {
      * @param lines tile varargs
      */
     public void add(int row,int col,Direction d, Tile...lines){
-        if(row==45&&col==45){
+        if(!firstMove){
                 throw new QwirkleException("You must use the firstAdd method");
         }
         if(!checkPlayedDeck(lines)){
@@ -88,11 +99,18 @@ public class Grid {
                     + "with same color and shape attribute");
         }
         for (int i = 0; i < lines.length; i++){
-            row += d.getDeltaRow();
-            col += d.getDeltaCol();
+            if(i>0){
+                row += d.getDeltaRow();
+                col += d.getDeltaCol();
+            }
             if(checkMove(row,col,lines[i])){
                 tiles[row][col] = lines[i];
             }else{
+                for (int j = i - 1; j >= 0; j--) {
+                    row -= d.getDeltaRow();
+                    col -= d.getDeltaCol();
+                    tiles[row][col] = null;
+                }
                 throw new QwirkleException("Not a valid move");
             }
         }
@@ -115,6 +133,7 @@ public class Grid {
             }if(checkMove(row,col,t)){
                 tiles[row][col] = new Tile(t.tile().color(),t.tile().shape());
             }else{
+                tiles[row][col] = null;
                 throw new QwirkleException("Not a valid move");
             }
         }
@@ -124,7 +143,14 @@ public class Grid {
      * @return A boolean value
      */
     public boolean isEmpty(){
-        return this.tiles==null;
+        for(int i=0; i<tiles.length; i++){
+            for(int j=0; j<tiles[i].length; j++){
+                if(tiles[i][j] != null){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     /**
      * This method checks all the surroundings position of a tile with a loop.
@@ -147,7 +173,7 @@ public class Grid {
             Tile curr=(t instanceof Tile)?(Tile) t:
                     new Tile(((TileAtPosition)t).tile().color(),
                            ((TileAtPosition) t).tile().shape());
-            while((nCol>=0&&nCol<SIZE&&nRow>=0&&nCol<SIZE)
+            while((nCol>=0&&nCol<SIZE&&nRow>=0&&nRow<SIZE)
                 &&(tiles[nRow][nCol]!=null)){
                     if(tiles[nRow][nCol].shape()== curr.shape()
                         ^tiles[nRow][nCol].color()== curr.color()){
@@ -169,7 +195,7 @@ public class Grid {
     private boolean checkPlayedDeck(Object...lines){
         if(lines.length>6){
             throw new QwirkleException("The deck you want to play with is"
-                    + "bigger than 6");
+                    + " bigger than 6");
         }
         for(int i=0;i<lines.length;i++){
             // Ternary operation to either cast the object as line or create
