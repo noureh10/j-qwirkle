@@ -10,6 +10,7 @@ import java.util.Collections;
 public class Bag {
     private List<Tile> tiles;
     private static Bag instance=null;
+
     /**
      * Constructor of Bag class
      */
@@ -39,7 +40,7 @@ public class Bag {
     /**
      * This method will return an array of randomly picked tiles. If n exceed 
      * the number of available tiles, it will return null. If not, it will return
-     * the desired array.
+     * the desired array. It will also make sure that it does not pick the same tile twice.
      * @param n Number of tiles wanted
      * @return an array of randomly picked tiles
      */
@@ -50,10 +51,12 @@ public class Bag {
         Random ran = new Random();
         List<Tile> ranTilesArray = new ArrayList<>(n);
         for (int i = 0; i < n; i++){
-            // Generates a random index that doesn't exceed the tiles list
-            int randomInt = ran.nextInt(tiles.size());
-            ranTilesArray.add(tiles.get(randomInt));
-            tiles.remove(randomInt);  
+            int randomIndex;
+            do {
+                randomIndex = ran.nextInt(tiles.size());
+            }while(ranTilesArray.contains(tiles.get(randomIndex)));
+            ranTilesArray.add(tiles.get(randomIndex));
+            tiles.remove(randomIndex);
         }
         return ranTilesArray;
     }
