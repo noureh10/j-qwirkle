@@ -3,21 +3,24 @@ import g58146.qwirkle.model.*;
 import g58146.qwirkle.view.View;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
 /**
  * The app class is used as a controller for the Qwirkle game
  * @author Nour
  */
 public class App {
-    private static boolean gameOver;
     private static GridView gridview;
     private static Game game;
+    private static final String SAVE_FILE = "save.dat";
+    private static boolean quitGame=false;
     /**
      * This method handles the user input and redirect to the corresponding method
      */
     private static void actions() {
         while (true) {
             View.displayMessage("Enter a command: ");
-            String[] tokens = RobustEntry.mixedInput().split("\\s+");
+            String[] tokens = mixedInput().split("\\s+");
             if (tokens.length == 0 || tokens[0].isEmpty()) {
                 View.displayError("The command you wrote is invalid");
                 continue;
@@ -28,12 +31,9 @@ public class App {
                 case "m" -> plicPlocCommand(tokens);
                 case "f" -> firstPlayCommand(tokens);
                 case "p" -> game.pass();
-                case "q" -> gameOver = true;
-                case "h" -> {
-                    View.displayHelp();
-                    View.display(game.getCurrentPlayer());
-                    View.display(gridview);
-                }
+                case "r" -> game.renew();
+                case "q" -> quitGame=true;
+                case "h" -> View.displayHelp();
                 default -> View.displayError("The command you wrote doesn't match with any Qwirkle command");
             }
             break;
@@ -140,6 +140,33 @@ public class App {
         }
     }
     /**
+     * This method is used to take numbers letters and spaces as input
+     */
+    private static String mixedInput(){
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+        while (!input.matches("[a-zA-Z0-9 ]+")) {
+            System.out.println("Invalid input. Please enter characters or numbers only.");
+            input = scanner.nextLine();
+        }
+        return input;
+    }
+    /**
+     * This method is used to only take letters as input
+     */
+    public static String inputLettersOnly(String message) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println(message);
+        while (true) {
+            String input = scanner.nextLine().trim();
+            if (input.matches("[a-zA-Z]+")) {
+                return input;
+            } else {
+                System.out.println("Invalid input. Please input letters only.");
+            }
+        }
+    }
+    /**
      * Returns a direction corresponding to a given character
      * @param dirChar The character representing the direction
      * @return The corresponding direction enum
@@ -160,20 +187,19 @@ public class App {
     private static String[] askForPlayers() {
         List<String> playerNames = new ArrayList<>();
         do{
-            String name = RobustEntry.inputLettersOnly("Enter a name: ");
+            String name = inputLettersOnly("Enter a name: ");
             playerNames.add(name);
-        }while (RobustEntry.inputLettersOnly("More players? (Y/N): ").equalsIgnoreCase("y"));
+        }while (inputLettersOnly("More players? (Y/N): ").equalsIgnoreCase("y"));
         return playerNames.toArray(new String[0]);
     }
     public static void main(String[] args){
-        gameOver=false;
         game = new Game(askForPlayers());
-        gridview = new GridView(game.getGrid());
+        gridview = game.getGrid();
         View.displayHelp();
         do{
             View.display(game.getCurrentPlayer());
             View.display(gridview);
             actions();
-        }while(!gameOver);
+        }while(!quitGame);
     }
 }

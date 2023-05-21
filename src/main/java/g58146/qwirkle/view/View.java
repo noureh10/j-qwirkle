@@ -11,13 +11,20 @@ public class View{
      * @param player
      */
     public static void display(Player player){
-        System.out.println("Player's name : " + player.getName());
+        System.out.println("-----------------------------");
+        System.out.println(" Player's name : " + player.getName());
+        System.out.println(" Player's score : " + player.getScore());
+        System.out.println("-----------------------------");
         List<Tile> playerHand = player.getHand();
         System.out.println("Player's hand : ");
-        for (Tile tile : playerHand) {
-            System.out.print(tileColor(tile)+tileShape(tile) + " ");
+        for (int i=0;i<playerHand.size();i++){
+            System.out.print((i+1) + "   ");
         }
-        System.out.print("\u001B[39m");;
+        System.out.println();
+        for (Tile tile : playerHand) {
+            System.out.print(tileColor(tile)+tileShape(tile) + "  ");
+        }
+        System.out.println("\u001B[39m");
     }
     /**
      * This method diplays the help prompt
@@ -32,6 +39,7 @@ public class View{
                 - play first : f <i1> [<i2>]
                 - help : h
                 - pass : p
+                - renew hand : r
                 - quit : q
                 i : index in list of tiles
                 d : direction in l (left), r (right), u (up), d(down)""");
@@ -43,36 +51,38 @@ public class View{
      */
     public static void display(GridView grid) {
         // Find the minimum and maximum rows and columns with tiles on them
-        int rowMin = 91, rowMax = 0;
-        int colMin = 91, colMax = 0;
+        int rowMin=91,rowMax=0;
+        int colMin=91,colMax=0;
         for (int i = 0; i < 91; i++) {
             for (int j = 0; j < 91; j++) {
-                if (grid.getGrid().get(i, j) != null) {
-                    rowMin = Math.min(rowMin, i);
-                    rowMax = Math.max(rowMax, i);
-                    colMin = Math.min(colMin, j);
-                    colMax = Math.max(colMax, j);
+                if (grid.get(i,j)!=null){
+                    rowMin=Math.min(rowMin,i);
+                    rowMax=Math.max(rowMax,i);
+                    colMin=Math.min(colMin,j);
+                    colMax=Math.max(colMax,j);
                 }
             }
         }
         System.out.println();
-        for (int i = rowMin; i <= rowMax; i++) {
-            System.out.printf("%2d |", i);
-            for (int j = colMin; j <= colMax; j++) {
-                Tile tile = grid.getGrid().get(i, j);
-                if (tile!=null) {
-                    System.out.print(tileColor(i, j, grid.getGrid())+tileShape(i, j, grid.getGrid()));
-                    System.out.print("  ");
-                }else{
-                    System.out.print("   ");
+        if(!grid.isEmpty()){
+            for(int i=rowMin;i<=rowMax;i++){
+                System.out.printf("%2d |",i);
+                for(int j=colMin;j<=colMax;j++){
+                    Tile tile = grid.get(i,j);
+                    if(tile!=null){
+                        System.out.print(tileColor(grid.get(i,j))+tileShape(grid.get(i,j)));
+                        System.out.print(" ");
+                    }else{
+                        System.out.print("   ");
+                    }
                 }
+                System.out.print("\u001B[39m");
+                System.out.println();
             }
-            System.out.print("\u001B[39m");
-            System.out.println();
-        }
-        System.out.print("   ");
-        for (int j = colMin; j <= colMax; j++) {
-            System.out.printf(" %2d", j);
+            System.out.print("   ");
+            for(int j=colMin;j<=colMax;j++){
+                System.out.printf(" %2d",j);
+            }
         }
         System.out.println();
     }
@@ -91,62 +101,19 @@ public class View{
         System.out.print(message);
     }
     /**
-     * This method is used to get a color according to the tile present at a
-     * specific position
-     * */
-    private static String tileColor(int i, int j, Grid grid) {
-            switch (grid.get(i,j).color()) {
-                case BLUE:
-                    return "\u001B[38;2;0;0;255m";
-                case RED:
-                    return "\u001B[38;2;255;0;0m";
-                case GREEN:
-                    return "\u001B[38;2;0;255;0m";
-                case ORANGE:
-                    return "\u001B[38;2;255;165;0m";
-                case YELLOW:
-                    return "\u001B[38;2;255;255;0m";
-                case PURPLE:
-                    return "\u001B[38;2;128;0;128m";
-                default:
-                    return "";
-            }
-    }
-    /**
      * This method is used to get a color according to the tile given in parameter.
      * @param tile
      * @return
      */
     private static String tileColor(Tile tile) {
-        switch (tile.color()) {
-            case BLUE:
-                return "\u001B[38;2;0;0;255m";
-            case RED:
-                return "\u001B[38;2;255;0;0m";
-            case GREEN:
-                return "\u001B[38;2;0;255;0m";
-            case ORANGE:
-                return "\u001B[38;2;255;165;0m";
-            case YELLOW:
-                return "\u001B[38;2;255;255;0m";
-            case PURPLE:
-                return "\u001B[38;2;128;0;128m";
-            default:
-                return "";
-        }
-    }
-    /**
-     * This method is used to get a shape according to the tile present at a
-     * specific position
-     * */
-    private static String tileShape(int row, int col, Grid grid){
-        return switch (grid.get(row, col).shape()){
-            case CROSS -> "x";
-            case SQUARE -> "■";
-            case ROUND -> "o";
-            case STAR -> "*";
-            case PLUS -> "+";
-            case DIAMOND -> "◆";
+        return switch (tile.color()) {
+            case BLUE -> "\u001B[38;2;0;0;255m";
+            case RED -> "\u001B[38;2;255;0;0m";
+            case GREEN -> "\u001B[38;2;0;255;0m";
+            case ORANGE -> "\u001B[38;2;255;165;0m";
+            case YELLOW -> "\u001B[38;2;255;255;0m";
+            case PURPLE -> "\u001B[38;2;128;0;128m";
+            default -> "";
         };
     }
     /**
@@ -156,12 +123,12 @@ public class View{
      */
     private static String tileShape(Tile tile){
         return switch (tile.shape()){
-            case CROSS -> "x";
-            case SQUARE -> "■";
-            case ROUND -> "o";
-            case STAR -> "*";
-            case PLUS -> "+";
-            case DIAMOND -> "◆";
+            case CROSS -> "x ";
+            case SQUARE -> "[]";
+            case ROUND -> "o ";
+            case STAR -> "* ";
+            case PLUS -> "+ ";
+            case DIAMOND -> "<>";
         };
     }
 }
