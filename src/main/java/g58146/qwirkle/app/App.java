@@ -15,6 +15,57 @@ public class App {
     private static final String SAVE_FILE = "save.dat";
     private static boolean quitGame=false;
     /**
+     * This method handles the user input when it comes to creating or loading a game.
+     */
+    private static boolean saveFileHandler() {
+        while (true) {
+            View.displaySaveHelp();
+            String input = inputLettersOnly("Enter a command: ");
+            if (input.length() != 1) {
+                View.displayError("Invalid command. Please enter a single letter.");
+                continue;
+            }
+            char command = Character.toLowerCase(input.charAt(0));
+            switch (command) {
+                case 'n':
+                    return true;
+                case 'l':
+                    game= Game.getFromFile(SAVE_FILE);
+                    gridview= game.getGrid();
+                    return false;
+                default:
+                    View.displayError("Invalid command. Please enter a valid command.");
+            }
+        }
+    }
+    /**
+     * This method handles the user input when it comes to quitting the game.
+     */
+    private static void quitHandler() {
+        while (true) {
+            View.displayQuitPrompt();
+            String input = inputLettersOnly("Enter a command: ");
+            if (input.length() != 1) {
+                View.displayError("Invalid command. Please enter a single letter.");
+                continue;
+            }
+            char command = Character.toLowerCase(input.charAt(0));
+            switch (command) {
+                case 'c':
+                    return;
+                case 'q':
+                    quitGame = true;
+                    return;
+                case 's':
+                    game.write(SAVE_FILE);
+                    quitGame = true;
+                    return;
+                default:
+                    View.displayError("Invalid command. Please enter a valid command.");
+            }
+        }
+    }
+    /**
      * This method handles the user input and redirect to the corresponding method
      */
     private static void actions() {
@@ -32,7 +83,8 @@ public class App {
                 case "f" -> firstPlayCommand(tokens);
                 case "p" -> game.pass();
                 case "r" -> game.renew();
-                case "q" -> quitGame=true;
+                case "s" -> game.write(SAVE_FILE);
+                case "q" -> quitHandler();
                 case "h" -> View.displayHelp();
                 default -> View.displayError("The command you wrote doesn't match with any Qwirkle command");
             }
@@ -193,10 +245,13 @@ public class App {
         return playerNames.toArray(new String[0]);
     }
     public static void main(String[] args){
-        game = new Game(askForPlayers());
-        gridview = game.getGrid();
-        View.displayHelp();
+        if(saveFileHandler()){
+            game = new Game(askForPlayers());
+            gridview = game.getGrid();
+            View.displayHelp();
+        }
         do{
+            View.displayNumberOfTiles(Bag.getInstance().size());
             View.display(game.getCurrentPlayer());
             View.display(gridview);
             actions();
