@@ -1,9 +1,10 @@
 package g58146.qwirkle.model;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Collections;
+
 /**
  * Bag contains the tiles
  * @author Nour
@@ -24,7 +25,6 @@ public class Bag implements Serializable {
                 }
             }
         }
-        Collections.shuffle(tiles);
     }
     /**
      * This method will return a singleton instance of the bag class, if the
@@ -45,8 +45,14 @@ public class Bag implements Serializable {
      * @return an array of randomly picked tiles
      */
     public List<Tile> getRandomTiles(int n){
-        if(n>this.size()){
-            return tiles;
+        if(this.tiles==null){
+            return null;
+        }else if(n>this.size()){
+            List<Tile> tilesAR = new ArrayList<>(this.tiles);
+            for (Tile tile : tilesAR) {
+                this.tiles.remove(tile);
+            }
+            return tilesAR;
         }
         Random ran = new Random();
         List<Tile> ranTilesArray = new ArrayList<>(n);
@@ -62,9 +68,16 @@ public class Bag implements Serializable {
     }
     /**
      * This method returns the size of the tiles attribute
-     * @return
+     * @return the size of the tiles attribute
      */
     public int size(){
         return tiles.size();
+    }
+    /**
+     * This method will set the instance of the bag to a new one. Necessary for the deserialization process.
+     * @param newBag the new bag instance
+     */
+    public static void setInstance(Bag newBag) {
+        instance = newBag;
     }
 }
