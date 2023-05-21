@@ -1,4 +1,5 @@
 package g58146.qwirkle.model;
+import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 /**
@@ -118,10 +119,50 @@ public class Game implements Serializable {
     /**
      * This method renews the person hands and pass its turn
      */
-    public void renew(){
-        this.players[this.currentPlayer].remove(getCurrentPlayerHand().toArray(Tile[]::new));
+    public void renew() {
+        Tile[] tilesToRemove = getCurrentPlayerHand().toArray(Tile[]::new);
+        this.players[this.currentPlayer].remove(tilesToRemove);
         this.players[this.currentPlayer].refill();
         pass();
+    }
+    /**
+     * This method is used to write the current game state of the object to a file
+     */
+    public void write(String filename) throws QwirkleException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(filename);
+             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
+            List<Object> objects = new ArrayList<>();
+            objects.add(this);
+            objects.add(Bag.getInstance());
+            objectOutputStream.writeObject(objects);
+        } catch (IOException e) {
+            throw new QwirkleException("Error while writing the game to file: " + filename);
+        }
+    }
+    /**
+     * This method is used to read the previous game state of the game in a file. It itterates through an object list,
+     * sets the bag instance and return the current game state.
+     * @param filename The name of the file where the game and Bag is saved
+     * @return The current game state
+     * @throws QwirkleException If there is an error while reading the file
+     */
+    public static Game getFromFile(String filename) throws QwirkleException {
+        Game game=null;
+        try (FileInputStream fileInputStream = new FileInputStream(filename);
+             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
+            List<Object> objects = (List<Object>) objectInputStream.readObject();  // Read the list of objects
+            for(Object o : objects) {
+                if(o instanceof Bag) {
+                    Bag.setInstance((Bag) o);  // Set the bag instance
+                }
+                if(o instanceof Game) {
+                    game = (Game) o;  // Return the game instance
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new QwirkleException("Error while reading the game from file: " + filename);
+        }
+        return game;
     }
     /**
      * This method is used to get the card from the player hand at indicated indexes
@@ -138,8 +179,8 @@ public class Game implements Serializable {
     /**
      * This method is used to increment the score of the player, remove the tiles from the player hand, refill if
      * necessary and pass the turn to the next player.
-     * @param score The score to add to the player
-     * @param t The tiles to remove from the player hand
+     * @param score the score to add to the player
+     * @param t the tiles to remove from the player hand
      */
     private void nextTurn(int score,Tile...t){
         players[currentPlayer].addScore(score);
@@ -183,7 +224,10 @@ public class Game implements Serializable {
     public GridView getGrid() {
         return new GridView(this.grid);
     }
-
+    /**
+     * This method is used to get the players
+     * @return
+     */
     public Player[] getPlayers() {
         return players;
     }
