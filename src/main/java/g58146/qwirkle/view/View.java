@@ -87,6 +87,20 @@ public class View{
         System.out.println();
     }
     /**
+     * This method displays the leaderboard
+     * @param players The players to display
+     */
+    public static void displayLeaderBoard(Player... players){
+        System.out.println("-----------------------------");
+        System.out.println("        Leaderboard :        ");
+        System.out.println("-----------------------------");
+        for(int i=0;i<players.length;i++){
+            System.out.println((i+1) + "# - " + players[i].getName() + " : " + players[i].getScore());
+        }
+        System.out.println("-----------------------------");
+
+    }
+    /**
      * This method displays error messages.
      * @param message
      */
