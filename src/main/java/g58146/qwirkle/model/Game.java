@@ -81,6 +81,34 @@ public class Game implements Serializable {
         nextTurn(score,tilesToRemove);
     }
     /**
+     * This method is used to see if the game is over. It checks if the bag is empty. If it is, it checks one of the
+     * player hand is empty. If it is, it adds 6 points to the player score and returns true. If it is not, it checks
+     * if all the players have at least one valid move. If it does, it returns false. If it does not, it returns true.
+     * @return true if the game is over, false if it is not.
+     */
+    public boolean isOver() {
+        if(Bag.getInstance().size()==0){
+            for(Player p : players) {
+                if(p.getHand().isEmpty()) {
+                    p.addScore(6);
+                    return true;
+                }else{
+                    boolean hasValidMove=false;
+                    for(Tile t:p.getHand()){
+                        if(grid.checkPlayableMove(t)){
+                            hasValidMove=true;
+                            break;
+                        }
+                    }if(hasValidMove){
+                        return false;
+                    }
+                }
+            }
+            return true; // All players have no possible moves and the bag is empty
+        }
+        return false; // Bag is not empty yet
+    }
+    /**
      * This method pass the turn to the next player
      */
     public void pass(){
