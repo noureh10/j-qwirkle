@@ -44,7 +44,6 @@ public class Player implements Serializable {
      */
     public void refill(){
         List<Tile> t = Bag.getInstance().getRandomTiles(6-tiles.size());
-        System.out.println();
         tiles.addAll(t);
     }
     /**
@@ -57,7 +56,7 @@ public class Player implements Serializable {
     }
     /**
      * This method adds score for the player
-     * @param score
+     * @param score score to add
      */
     public void addScore(int score){
         this.score+=score;
