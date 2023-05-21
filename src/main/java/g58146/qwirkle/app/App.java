@@ -200,6 +200,10 @@ public class App {
             View.display(game.getCurrentPlayer());
             View.display(gridview);
             actions();
-        }while(!quitGame);
+        }while(!game.isOver()&&!quitGame);
+        if(!quitGame){
+            View.display(gridview);
+            View.displayLeaderBoard(game.getPlayers());
+        }
     }
 }
