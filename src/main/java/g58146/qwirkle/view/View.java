@@ -8,7 +8,7 @@ import java.util.List;
 public class View{
     /**
      * This method displays the current player name and his hand
-     * @param player
+     * @param player the current player
      */
     public static void display(Player player){
         System.out.println("-----------------------------");
@@ -25,6 +25,12 @@ public class View{
             System.out.print(tileColor(tile)+tileShape(tile) + "  ");
         }
         System.out.println("\u001B[39m");
+    }
+    /**
+     * This method displays the number of tiles in the bag
+     */
+    public static void displayNumberOfTiles(int i){
+        System.out.println("Number of tiles in the bag : " + i);
     }
     /**
      * This method diplays the help prompt
@@ -45,9 +51,28 @@ public class View{
                 d : direction in l (left), r (right), u (up), d(down)""");
     }
     /**
+     * This method displays the save help prompt
+     */
+    public static void displaySaveHelp(){
+        System.out.println("""
+                Q W I R K L E - M E N U
+                Pick an option
+                - l : load the last played game
+                - n : new game""");
+    }
+    /**
+     * This method displays the quit help prompt
+     */
+    public static void displayQuitPrompt(){
+        System.out.println("""
+                c : continue
+                q : quit without saving
+                s : save and quit""");
+    }
+    /**
      * This method displays the grid. It first find the minimum and maximum rows and column with tiles on them, and it then
      * displays it.
-     * @param grid
+     * @param grid the grid to display
      */
     public static void display(GridView grid) {
         // Find the minimum and maximum rows and columns with tiles on them
@@ -102,22 +127,22 @@ public class View{
     }
     /**
      * This method displays error messages.
-     * @param message
+     * @param message the error message
      */
     public static void displayError(String message){
         System.out.println(message);
     }
     /**
      * This method displays message without going to the next line
-     * @param message
+     * @param message the message to display
      */
     public static void displayMessage(String message){
         System.out.print(message);
     }
     /**
      * This method is used to get a color according to the tile given in parameter.
-     * @param tile
-     * @return
+     * @param tile the tile
+     * @return the color
      */
     private static String tileColor(Tile tile) {
         return switch (tile.color()) {
@@ -127,13 +152,12 @@ public class View{
             case ORANGE -> "\u001B[38;2;255;165;0m";
             case YELLOW -> "\u001B[38;2;255;255;0m";
             case PURPLE -> "\u001B[38;2;128;0;128m";
-            default -> "";
         };
     }
     /**
      * This method is used to get a shape according to the tile given in parameter.
-     * @param tile
-     * @return
+     * @param tile the tile
+     * @return the shape
      */
     private static String tileShape(Tile tile){
         return switch (tile.shape()){
