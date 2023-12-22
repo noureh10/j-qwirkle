@@ -48,11 +48,11 @@ There you have it, terminal based Qwirkle.
 <img src="https://raw.githubusercontent.com/noureh10/j-qwirkle/master/screenshots/C1.PNG" width="30%">
 <img src="https://raw.githubusercontent.com/noureh10/j-qwirkle/master/screenshots/C2.PNG" width="29.7%">
 
-### What's coming to this project in the future
+## What's coming to this project in the future
 
 The next two things that will be coming in a near future for this project is the implementation of a proper interface ; I'll be using [JavaFX](https://github.com/openjdk/jfx) for it. After that, the final step would be to introduce a online mode with the help of [SNF4J](https://github.com/snf4j/snf4j) networking framework.
 
-### Known issues
+## Known issues
 
 There's a serie of known bugs in this project that I did not fixed yet. They are the following :
 
