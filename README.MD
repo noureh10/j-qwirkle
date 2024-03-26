@@ -58,7 +58,7 @@ There's a serie of known bugs in this project that I did not fixed yet. They are
 
 In the case of Qwirkle logic, the bugs are :
 
-- The program doesn't behave as intended when trying to insert a tile between two identical tiles, or two tiles with no common point.
+- The program doesn't behave as intended when trying to insert a tile between two identical tiles, or two tiles with no common attribute.
 - The program doesn't behave as intended when when trying to add tiles on either side of a line with a hole in the middle.
 - The program doesn't behave as intended when trying to add unaligned tiles.
 - The program doesn't behave as intended when validly adding several tiles starting from a position not adjacent to tiles already placed.
